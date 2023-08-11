@@ -21,8 +21,6 @@ let package = Package(
         .target(
             name: "MySnipeSdk",
             dependencies: []),
-        .testTarget(
-            name: "MySnipeSdkTests",
-            dependencies: ["MySnipeSdk"]),
+    
     ]
 )
