@@ -8,7 +8,7 @@ To use `SnipeSdk` in your iOS project, follow these steps:
 
 1. Copy this repository link
     ```
-    https://github.com/noman2002/snipe-sdk-ios.git
+    https://github.com/snipeit-ai/snipe-sdk-ios.git
     ```
 
 2. Add the `SnipeSdk` package to your Xcode project.
