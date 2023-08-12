@@ -1,15 +1,35 @@
 import Foundation
 
-public struct MySnipeSdk {
+public struct SnipeSdk {
     private var _apiKey: String?
     public init(apiKey:String) {
         _apiKey=apiKey
         
     }
     
+    public func signUp(hash: String) -> String {
+        guard let apiKey = _apiKey else {
+            print("API Key not initialized.")
+            return ""
+        }
+        var output:String="";
+        
+        let apiService = ApiService()
+        apiService.post(endpoint: "signUp", apiKey: apiKey, requestBody: "hash:\(hash)") { response in
+            if let response = response {
+                print("POST Response: \(response)")
+                output=response;
+                
+            } else {
+                print("POST Request failed")
+            }
+        }
+           return output
+       }
+    
     public func trackEvent(eventId: String, transactionAmount: Int? = nil, partialPercentage: Int? = nil)  {
         guard let apiKey = _apiKey else {
-            print("API Key not initialized. Call init() first.")
+            print("API Key not initialized.")
             return
         }
 
@@ -106,60 +126,3 @@ private func buildRequestBody(eventId: String, transactionAmount: Int?, partialP
 }
 
 
-
-private class ApiService {
-    private var baseUrl: String = "https://jsonplaceholder.typicode.com/todos/1"
-
-    func get(endpoint: String, apiKey: String, callback: @escaping (String?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
-            guard let url = URL(string: self.baseUrl + endpoint) else {
-                callback(nil)
-                return
-            }
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "GET"
-//            request.addValue("Bearer " + apiKey, forHTTPHeaderField: "Authorization")
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                guard let data = data, error == nil else {
-                    callback(nil)
-                    return
-                }
-                
-                if let responseString = String(data: data, encoding: .utf8) {
-                    callback(responseString)
-                } else {
-                    callback(nil)
-                }
-            }.resume()
-        }
-    }
-
-    func post(endpoint: String, apiKey: String, requestBody: String, callback: @escaping (String?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
-            guard let url = URL(string: self.baseUrl + endpoint) else {
-                callback(nil)
-                return
-            }
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.addValue("Bearer " + apiKey, forHTTPHeaderField: "Authorization")
-            request.httpBody = requestBody.data(using: .utf8)
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                guard let data = data, error == nil else {
-                    callback(nil)
-                    return
-                }
-                
-                if let responseString = String(data: data, encoding: .utf8) {
-                    callback(responseString)
-                } else {
-                    callback(nil)
-                }
-            }.resume()
-        }
-    }
-}
