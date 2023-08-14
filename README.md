@@ -34,6 +34,46 @@ let snipeSdk = SnipeSdk(apiKey: apiKey)
 
 The `signUp` function in the SnipeSdk package allows you to create a document in the Snipe database by providing a hash value. This document serves as a record of user sign-up and is stored in the Snipe database for future reference. The function initiates an API call to the Snipe server and returns the unique identifier, known as `snipeId`, associated with the created document.
 
+To generate a hash you can call the `generateHash` function with appropriate values for `userId`, `phone`, and `email` to generate a SHA-256 hash. Make sure to replace `your_secret_key_here` with your actual secret key.
+
+```swift
+import Foundation
+import CommonCrypto
+
+let HASH_KEY = "your_secret_key_here" // Adjust this secret key as needed
+
+func generateHash(userId: String, phone: String, email: String) -> String {
+    // Concatenate your variables
+    let input = "\(userId).\(phone).\(email).\(HASH_KEY)"
+
+    // Create a SHA-256 digest
+    if let inputData = input.data(using: .utf8) {
+        var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        _ = inputData.withUnsafeBytes {
+            CC_SHA256($0.baseAddress, UInt32(inputData.count), &digest)
+        }
+
+        // Convert the hash bytes to a hex string
+        return bytesToHex(hash: digest)
+    }
+
+    return ""
+}
+
+func bytesToHex(hash: [UInt8]) -> String {
+    let hexChars: [Character] = Array("0123456789ABCDEF")
+    var result = ""
+
+    for byte in hash {
+        let i = Int(byte)
+        result.append(hexChars[i >> 4 & 0x0F])
+        result.append(hexChars[i & 0x0F])
+    }
+
+    return result
+}
+
+```
 
 #### Parameters
 
@@ -41,7 +81,7 @@ The `signUp` function in the SnipeSdk package allows you to create a document in
 
 #### Return Value
 
-The `signUp` function returns a `String` representing the `snipeId` of the created document. This `snipeId` is a unique identifier that can be used to retrieve and manage the document in the Snipe database.
+The `signUp` function returns a `String` representing the `snipeUserId` of the created document. This `snipeUserId` is a unique identifier that can be used to retrieve and manage the document in the Snipe database.
 
 #### Usage 
 
@@ -58,6 +98,7 @@ The `trackEvent` function in the SnipeSdk package allows you to track and trigge
 #### Parameters
 
 - `eventId` (Type: `String`): The unique identifier for the event you want to track within the Snipe system.
+- `snipeUserId` (Type: `String`): The unique identifier for the user who is triggering the event.
 - `transactionAmount` (Type: `Int?`, Default: `nil`): The transaction amount associated with the event, if applicable.
 - `partialPercentage` (Type: `Int?`, Default: `nil`): The partial percentage value for the event, if applicable.
 
@@ -65,10 +106,11 @@ The `trackEvent` function in the SnipeSdk package allows you to track and trigge
 
 ```swift
 let eventId = "EVENT_ID"
+let snipeUserId= "SNIPE_USER_ID"
 let transactionAmount: Int? = 100
 let partialPercentage: Int? = 50
 
-snipeSdk.trackEvent(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
+snipeSdk.trackEvent(eventId: eventId,snipeUserId: snipeUserId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
 ```
 
 This function tracks an event with an optional transaction amount and partial percentage. It doesn't return any value.
@@ -79,7 +121,7 @@ The `getCoinData` function in the SnipeSdk package allows you to retrieve coin d
 
 #### Parameters
 
-- `snipeId` (Type: `String`): The unique identifier of the Snipe user for whom you want to retrieve coin data.
+- `snipeUserId` (Type: `String`): The unique identifier of the Snipe user for whom you want to retrieve coin data.
 
 #### Return Value
 
@@ -90,7 +132,7 @@ The `getCoinData` function in the SnipeSdk package allows you to retrieve coin d
 #### Usage
 
 ```swift
-let snipeId = "USER_SNIP_ID"
+let snipeUserId = "USER_SNIPE_ID"
 let coinData = snipeSdk.getCoinData(snipeId: snipeId)
 ```
 
@@ -115,10 +157,10 @@ let transactionAmount: Int? = 100
 let partialPercentage: Int? = 50
 snipeSdk.trackEvent(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
 
-let snipeId = "USER_SNIP_ID"
+let snipeUserId = "USER_SNIPE_ID"
 let coinData = snipeSdk.getCoinData(snipeId: snipeId)
 ```
 
 ## Note
 
-Make sure to replace `"YOUR_API_KEY"`, `"your_hash_value"`, `"EVENT_ID"`, and `"USER_SNIP_ID"` with actual values from your application.
+Make sure to replace `"YOUR_API_KEY"`, `"your_hash_value"`, `"EVENT_ID"`, and `"USER_SNIPE_ID"` with actual values from your application.
