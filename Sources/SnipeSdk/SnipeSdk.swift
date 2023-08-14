@@ -15,10 +15,10 @@ public struct SnipeSdk {
         var output:String="";
         
         let apiService = ApiService()
-        apiService.post(endpoint: "signUp", apiKey: apiKey, requestBody: "hash:\(hash)") { response in
+        apiService.post(endpoint: "users",requestBody:["hash": hash],  headers: ["x-api-key":apiKey]) { response in
             if let response = response {
                 print("POST Response: \(response)")
-                output=response;
+                output=parseSnipeId(jsonResponse: response) ?? "";
                 
             } else {
                 print("POST Request failed")
@@ -26,8 +26,24 @@ public struct SnipeSdk {
         }
            return output
        }
+   private func parseSnipeId(jsonResponse: String) -> String? {
+        if let data = jsonResponse.data(using: .utf8) {
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let dataObject = json["data"] as? [String: Any],
+                   let valueObject = dataObject["value"] as? [String: Any],
+                   let snipeId = valueObject["snipe_id"] as? String {
+                    return snipeId
+                }
+            } catch {
+                print("JSON Parsing Error: \(error)")
+            }
+        }
+        return nil
+    }
+
     
-    public func trackEvent(eventId: String, transactionAmount: Int? = nil, partialPercentage: Int? = nil)  {
+    public func trackEvent(eventId: String,snipeId: String, transactionAmount: Int? = nil, partialPercentage: Int? = nil)  {
         guard let apiKey = _apiKey else {
             print("API Key not initialized.")
             return
@@ -36,7 +52,7 @@ public struct SnipeSdk {
        let requestBody = buildRequestBody(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
 
         let apiService = ApiService()
-        apiService.post(endpoint: "trigger-event", apiKey: apiKey, requestBody: requestBody) { response in
+        apiService.post(endpoint: "trigger-event", requestBody: requestBody, headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
             if let response = response {
                 print("POST Response: \(response)")
                 
@@ -93,7 +109,7 @@ public struct SnipeSdk {
         }
 
         let apiService = ApiService()
-        apiService.get(endpoint: "get-user-token/\(snipeId)", apiKey: apiKey) { response in
+        apiService.get(endpoint: "get-user-tokens",headers: ["x-api-key":apiKey,"x-user-id":snipeId] ) { response in
             if let response = response {
                 print("GET Response: \(response)")
                 tempData = self.parseTokenResponse(json: response)
@@ -108,21 +124,16 @@ public struct SnipeSdk {
     
 }
 
+private func buildRequestBody(eventId: String, transactionAmount: Int?, partialPercentage: Int?) -> [String:Any] {
+    var body: [String: Any] = ["eventId": eventId]
 
-private func buildRequestBody(eventId: String, transactionAmount: Int?, partialPercentage: Int?) -> String {
-    var parts: [String] = []
+        body["transactionAmount"] = transactionAmount
+   
+        body["partialPercentage"] = partialPercentage
+    
 
-    parts.append("eventId=\(eventId)")
+   
 
-    if let transactionAmount = transactionAmount {
-        parts.append("transactionAmount=\(transactionAmount)")
-    }
-
-    if let partialPercentage = partialPercentage {
-        parts.append("partialPercentage=\(partialPercentage)")
-    }
-
-    return parts.joined(separator: "&")
+    return body
 }
-
 
