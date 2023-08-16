@@ -62,6 +62,26 @@ public struct SnipeSdk {
         }
     }
     
+    public func getTokenHistory(snipeId: String)->Any  {
+        var tempData:String="";
+        guard let apiKey = _apiKey else {
+            print("API Key not initialized.")
+            return ""
+        }
+
+        let apiService = ApiService()
+        apiService.get(endpoint: "token-history", headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
+            if let response = response {
+                print("GET token Response: \(response)")
+                tempData=response;
+            } else {
+                print("GET token Request failed")
+            }
+        }
+        return tempData;
+    }
+    
+    
     private struct Tokens {
         let value: NSNumber
         let tokenId: String
