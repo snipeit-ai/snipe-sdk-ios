@@ -8,7 +8,9 @@
 import Foundation
 
 internal class ApiService {
-    private var baseUrl: String = "https://2e9b-180-151-196-242.ngrok.io/api/"
+//    private var baseUrl: String = "https://snipe-api-lfvnq7enja-el.a.run.app/api/"
+
+    private var baseUrl: String = "https://d275-117-194-114-24.ngrok-free.app/api/"
 
     func get(endpoint: String, headers: [String: String]?=nil, callback: @escaping (String?) -> Void) {
         DispatchQueue.global(qos: .background).async {
@@ -98,6 +100,5 @@ internal class ApiService {
             }.resume()
         }
     }
-
 
 }

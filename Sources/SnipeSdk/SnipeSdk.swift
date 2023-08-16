@@ -52,7 +52,7 @@ public struct SnipeSdk {
        let requestBody = buildRequestBody(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
 
         let apiService = ApiService()
-        apiService.post(endpoint: "trigger-event", requestBody: requestBody, headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
+        apiService.post(endpoint: "events/trigger-event", requestBody: requestBody, headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
             if let response = response {
                 print("POST Response: \(response)")
                 
@@ -70,7 +70,7 @@ public struct SnipeSdk {
         }
 
         let apiService = ApiService()
-        apiService.get(endpoint: "token-history", headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
+        apiService.get(endpoint: "token-management/read-token-user-history", headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
             if let response = response {
                 print("GET token Response: \(response)")
                 tempData=response;
@@ -129,7 +129,7 @@ public struct SnipeSdk {
         }
 
         let apiService = ApiService()
-        apiService.get(endpoint: "get-user-tokens",headers: ["x-api-key":apiKey,"x-user-id":snipeId] ) { response in
+        apiService.get(endpoint: "token-management/get-user-tokens",headers: ["x-api-key":apiKey,"x-user-id":snipeId] ) { response in
             if let response = response {
                 print("GET Response: \(response)")
                 tempData = self.parseTokenResponse(json: response)
@@ -145,11 +145,11 @@ public struct SnipeSdk {
 }
 
 private func buildRequestBody(eventId: String, transactionAmount: Int?, partialPercentage: Int?) -> [String:Any] {
-    var body: [String: Any] = ["eventId": eventId]
+    var body: [String: Any] = ["event_id": eventId]
 
-        body["transactionAmount"] = transactionAmount
+        body["transaction_value"] = transactionAmount
    
-        body["partialPercentage"] = partialPercentage
+        body["partial_percentage"] = partialPercentage
     
 
    
