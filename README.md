@@ -133,10 +133,33 @@ The `getCoinData` function in the SnipeSdk package allows you to retrieve coin d
 
 ```swift
 let snipeUserId = "USER_SNIPE_ID"
-let coinData = snipeSdk.getCoinData(snipeId: snipeId)
+let coinData = snipeSdk.getCoinData(snipeId: snipeUserId)
 ```
 
 The `getCoinData` function returns an array of dictionaries, each containing coin data.
+
+### Get Token History
+
+The `getTokenHistory` function in the SnipeSdk package allows you to retrieve coin data associated with a specific Snipe user ID. This function initiates an API call to the Snipe server, requesting the user's token history/transaction history. It returns a list of dictionaries containing details about the user's tokens, such as token values and IDs, which can be used for further processing or display within your application.
+
+#### Parameters
+
+- `snipeUserId` (Type: `String`): The unique identifier of the Snipe user for whom you want to retrieve coin data.
+
+#### Return Value
+
+- A list of dictionaries, where each dictionary contains token details:
+  - `"value"` (Type: `NSNumber`): The value associated with the token.
+  - `"token_id"` (Type: `String`): The unique identifier of the token.
+
+#### Usage
+
+```swift
+let snipeUserId = "USER_SNIPE_ID"
+let tokenHistoryData = snipeSdk.getTokenHistory(snipeId: snipeUserId)
+```
+
+The `getTokenHistory` function returns an array of dictionaries, each containing coin data.
 
 
 ## Example
