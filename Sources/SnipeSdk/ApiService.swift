@@ -8,7 +8,7 @@
 import Foundation
 
 internal class ApiService {
-    private var baseUrl: String = "https://snipe-api-lfvnq7enja-el.a.run.app/api/"
+    private var baseUrl: String = "https://snipe-sploot-lfvnq7enja-de.a.run.app/api/"
 
 //    private var baseUrl: String = "https://d275-117-194-114-24.ngrok-free.app/api/"
 
