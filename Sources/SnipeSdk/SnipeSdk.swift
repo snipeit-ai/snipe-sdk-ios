@@ -1,5 +1,6 @@
 import Foundation
 
+@available(iOS 15.0, *)
 public struct SnipeSdk {
     private var _apiKey: String?
     public init(apiKey:String) {
@@ -7,139 +8,134 @@ public struct SnipeSdk {
         
     }
     
-    public func signUp(hash: String) -> String {
+    public  func signUp(hash: String) async -> Any {
         guard let apiKey = _apiKey else {
             print("API Key not initialized.")
             return ""
         }
-        var output:String="";
+        
+        var output: String = ""
         
         let apiService = ApiService()
-        apiService.post(endpoint: "users",requestBody:["hash": hash],  headers: ["x-api-key":apiKey]) { response in
-            if let response = response {
-                print("POST Response: \(response)")
-                output=parseSnipeId(jsonResponse: response) ?? "";
-                
-            } else {
-                print("POST Request failed")
-            }
-        }
-           return output
-       }
-   private func parseSnipeId(jsonResponse: String) -> String? {
-        if let data = jsonResponse.data(using: .utf8) {
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let dataObject = json["data"] as? [String: Any],
-                   let valueObject = dataObject["value"] as? [String: Any],
-                   let snipeId = valueObject["snipe_id"] as? String {
-                    return snipeId
-                }
-            } catch {
-                print("JSON Parsing Error: \(error)")
-            }
-        }
-        return nil
-    }
-
-    
-    public func trackEvent(eventId: String,snipeId: String, transactionAmount: Int? = nil, partialPercentage: Int? = nil)  {
-        guard let apiKey = _apiKey else {
-            print("API Key not initialized.")
-            return
-        }
-
-       let requestBody = buildRequestBody(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
-
-        let apiService = ApiService()
-        apiService.post(endpoint: "events/trigger-event", requestBody: requestBody, headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
-            if let response = response {
-                print("POST Response: \(response)")
-                
-            } else {
-                print("POST Request failed")
-            }
-        }
-    }
-    
-    public func getTokenHistory(snipeId: String)->Any  {
-        var tempData:String="";
-        guard let apiKey = _apiKey else {
-            print("API Key not initialized.")
-            return ""
-        }
-
-        let apiService = ApiService()
-        apiService.get(endpoint: "token-management/read-token-user-history", headers: ["x-api-key":apiKey,"x-user-id":snipeId]) { response in
-            if let response = response {
-                print("GET token Response: \(response)")
-                tempData=response;
-            } else {
-                print("GET token Request failed")
-            }
-        }
-        return tempData;
-    }
-    
-    
-    private struct Tokens {
-        let value: NSNumber
-        let tokenId: String
-    }
-
-    private func parseTokenResponse(json: String) -> [Tokens] {
-        guard let data = json.data(using: .utf8) else {
-            return []
-        }
         
         do {
-            let jsonArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] ?? []
+            let response = try await apiService.post(endpoint: "users", requestBody: ["hash": hash], headers: ["x-api-key": apiKey])
             
-            var resultList: [Tokens] = []
-            
-            for tokenObj in jsonArray {
-                if let value = tokenObj["value"] as? Int, let tokenId = tokenObj["token_id"] as? String {
-                    resultList.append(Tokens(value: NSNumber(value: value), tokenId: tokenId))
-                }
-            }
-            
-            return resultList
+            print("POST Response: \(response)")
+//            output = parseSnipeId(jsonResponse: response) ?? ""
+            output = response
+            return output
         } catch {
-            print("Error parsing JSON: \(error)")
-            return []
+            print("POST Request failed: \(error)")
+            return ""
         }
-    }
-
-    private func convertTokensListToMapList(tokensList: [Tokens]) -> [[String: Any]] {
-        return tokensList.map { token in
-            return [
-                "value": token.value,
-                "token_id": token.tokenId
-            ]
-        }
-    }
-
-
-  public  func getCoinData(snipeId: String) -> [[String: Any]] {
-        var tempData: [Tokens] = []
         
+       
+    }
+
+    
+//   private func parseSnipeId(jsonResponse: String) -> String? {
+//        if let data = jsonResponse.data(using: .utf8) {
+//            do {
+//                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+//                   let dataObject = json["data"] as? [String: Any],
+//                   let valueObject = dataObject["value"] as? [String: Any],
+//                   let snipeId = valueObject["snipe_id"] as? String {
+//                    return snipeId
+//                }
+//            } catch {
+//                print("JSON Parsing Error: \(error)")
+//            }
+//        }
+//        return nil
+//    }
+
+    
+    public  func trackEvent(eventId: String, snipeId: String, transactionAmount: Int? = nil, partialPercentage: Int? = nil) async -> Any {
+        guard let apiKey = _apiKey else {
+            print("API Key not initialized.")
+            return ""
+        }
+        
+        let requestBody = buildRequestBody(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
+        
+        do {
+            let apiService = ApiService()
+            let response = try await apiService.post(endpoint: "events/trigger-event", requestBody: requestBody, headers: ["x-api-key": apiKey, "x-user-id": snipeId])
+            
+//            print("POST Response: \(response)")
+            return response
+        } catch {
+            print("POST Request failed: \(error)")
+            return ""
+        }
+        
+    }
+
+    
+    public func getTokenHistory(snipeId: String) async -> Any {
+        guard let apiKey = _apiKey else {
+            print("API Key not initialized.")
+            return ""
+        }
+
+        do {
+            let apiService = ApiService()
+            let response = try await apiService.get(endpoint: "token-management/read-token-user-history", headers: ["x-api-key": apiKey, "x-user-id": snipeId])
+            
+//            print("GET token Response: \(response)")
+            
+            return response
+        } catch {
+            print("GET token Request failed: \(error)")
+            return ""
+        }
+    }
+
+    
+    public func getTokenDetails(snipeId: String) async -> Any {
+        guard let apiKey = _apiKey else {
+            print("API Key not initialized.")
+            return ""
+        }
+
+        do {
+            let apiService = ApiService()
+            let response = try await apiService.get(endpoint: "token-management/get-all-client-tokens", headers: ["x-api-key": apiKey, "x-user-id": snipeId])
+            
+//            print("GET token Response: \(response)")
+            
+            return response
+        } catch {
+//            print("GET token Request failed: \(error)")
+            return ""
+        }
+    }
+
+    
+   
+
+   
+
+
+    public func getCoinData(snipeId: String) async -> Any {
         guard let apiKey = _apiKey else {
             print("API Key not initialized. Call init() first.")
-            return []
+            return ""
         }
 
         let apiService = ApiService()
-        apiService.get(endpoint: "token-management/get-user-tokens",headers: ["x-api-key":apiKey,"x-user-id":snipeId] ) { response in
-            if let response = response {
-                print("GET Response: \(response)")
-                tempData = self.parseTokenResponse(json: response)
-            } else {
-                print("GET Request failed")
-            }
+
+        do {
+            let response = try await apiService.get(endpoint: "token-management/get-user-tokens", headers: ["x-api-key": apiKey, "x-user-id": snipeId])
+//            print("GET Response: \(response)")
+            return response
+        } catch {
+            print("GET Request failed with error: \(error)")
+            return ""
         }
-        
-        return convertTokensListToMapList(tokensList: tempData)
     }
+
 
     
 }
@@ -152,8 +148,5 @@ private func buildRequestBody(eventId: String, transactionAmount: Int?, partialP
         body["partial_percentage"] = partialPercentage
     
 
-   
-
     return body
 }
-
