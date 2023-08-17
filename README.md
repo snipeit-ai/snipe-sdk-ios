@@ -87,7 +87,7 @@ The `signUp` function returns a `String` representing the `snipeUserId` of the c
 
 ```swift
 let hash = "your_hash_value"
-let signUpResponse = snipeSdk.signUp(hash: hash)
+let signUpResponse = await snipeSdk.signUp(hash: hash)
 ```
 
 
@@ -110,7 +110,7 @@ let snipeUserId= "SNIPE_USER_ID"
 let transactionAmount: Int? = 100
 let partialPercentage: Int? = 50
 
-snipeSdk.trackEvent(eventId: eventId,snipeUserId: snipeUserId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
+await snipeSdk.trackEvent(eventId: eventId,snipeUserId: snipeUserId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
 ```
 
 This function tracks an event with an optional transaction amount and partial percentage. It doesn't return any value.
@@ -133,7 +133,7 @@ The `getCoinData` function in the SnipeSdk package allows you to retrieve coin d
 
 ```swift
 let snipeUserId = "USER_SNIPE_ID"
-let coinData = snipeSdk.getCoinData(snipeId: snipeUserId)
+let coinData = await snipeSdk.getCoinData(snipeId: snipeUserId)
 ```
 
 The `getCoinData` function returns an array of dictionaries, each containing coin data.
@@ -156,33 +156,34 @@ The `getTokenHistory` function in the SnipeSdk package allows you to retrieve co
 
 ```swift
 let snipeUserId = "USER_SNIPE_ID"
-let tokenHistoryData = snipeSdk.getTokenHistory(snipeId: snipeUserId)
+let tokenHistoryData = await snipeSdk.getTokenHistory(snipeId: snipeUserId)
 ```
 
 The `getTokenHistory` function returns an array of dictionaries, each containing coin data.
 
+### Get Token Details
 
-## Example
+The `getTokenDetails` function in the SnipeSdk package allows you to retrieve all token data associated with a specific Snipe client. This function initiates an API call to the Snipe server, requesting the details. It returns a list of dictionaries containing details about the tokens, such as images and IDs, which can be used for further processing or display within your application.
 
-Here's an example of how to use the `SnipeSdk` package:
+#### Parameters
+
+- `snipeUserId` (Type: `String`): The unique identifier of the Snipe user for whom you want to retrieve coin data.
+
+#### Return Value
+
+- A list of dictionaries, where each dictionary contains token details:
+  - `"image"` (Type: `String`): The url of the asset of  token.
+  - `"token_id"` (Type: `String`): The unique identifier of the token.
+
+#### Usage
 
 ```swift
-import SnipeSdk
-
-let apiKey = "YOUR_API_KEY"
-let snipeSdk = SnipeSdk(apiKey: apiKey)
-
-let hash = "your_hash_value"
-let signUpResponse = snipeSdk.signUp(hash: hash)
-
-let eventId = "EVENT_ID"
-let transactionAmount: Int? = 100
-let partialPercentage: Int? = 50
-snipeSdk.trackEvent(eventId: eventId, transactionAmount: transactionAmount, partialPercentage: partialPercentage)
-
 let snipeUserId = "USER_SNIPE_ID"
-let coinData = snipeSdk.getCoinData(snipeId: snipeId)
+let tokenDetails = await snipeSdk.getTokenDetails(snipeId: snipeUserId)
 ```
+
+The `getTokeDetails` function returns an array of dictionaries, each containing token data.
+
 
 ## Note
 
