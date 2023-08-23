@@ -2,10 +2,14 @@ import Foundation
 
 @available(iOS 15.0, *)
 internal class ApiService {
-    private var baseUrl: String = "https://snipe-sploot-lfvnq7enja-de.a.run.app/api/"
+//    private var devUrl: String = "https://snipe-sploot-lfvnq7enja-de.a.run.app/api/"
+//    private var prodUrl: String = "https://snipe-sploot-lfvnq7enja-de.a.run.app/api/"
+//    private var baseUrl: String?
 
-    func get(endpoint: String, headers: [String: String]? = nil) async throws -> String {
-        guard let url = URL(string: self.baseUrl + endpoint) else {
+//    private var baseUrl: String = "https://6fd1-106-51-72-55.ngrok.io/api/"
+
+    func get(url:String, endpoint: String, headers: [String: String]? = nil) async throws -> String {
+        guard let url = URL(string: url + endpoint) else {
             throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
 
@@ -31,8 +35,8 @@ internal class ApiService {
         }
     }
 
-    func post(endpoint: String, requestBody: [String: Any], headers: [String: String]? = nil) async throws -> String {
-        guard let url = URL(string: self.baseUrl + endpoint) else {
+    func post(url:String, endpoint: String, requestBody: [String: Any], headers: [String: String]? = nil) async throws -> String {
+        guard let url = URL(string: url + endpoint) else {
             throw NSError(domain: "InvalidURL", code: 0, userInfo: nil)
         }
 
