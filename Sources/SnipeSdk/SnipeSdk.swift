@@ -4,8 +4,8 @@ import Foundation
 public struct SnipeSdk {
     private var _apiKey: String?
     
-    private var devUrl: String = "https://0198-106-51-72-55.ngrok.io/api/"
-    private var prodUrl: String = "https://0573-106-51-72-55.ngrok.io/api/"
+    private var devUrl: String = "https://sandbox.api.playwithsnipe.com/api/"
+    private var prodUrl: String = "https://api.playwithsnipe.com/api/"
     
     private var baseUrl: String?
     public init(apiKey:String) {
